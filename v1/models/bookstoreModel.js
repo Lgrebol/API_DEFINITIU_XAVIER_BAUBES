@@ -1,4 +1,3 @@
-// models/bookstoreModel.js
 const fs = require("fs").promises;
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
@@ -21,7 +20,8 @@ async function getBookstoreById(id) {
 async function createBookstore(newBookstore) {
   const bookstores = await getAllBookstores();
   newBookstore.id = uuidv4();
-  newBookstore.createdAt = new Date();
+  newBookstore.createdAt = new Date().toISOString();
+  newBookstore.updatedAt = newBookstore.createdAt;
   bookstores.push(newBookstore);
   await fs.writeFile(bookstoresFile, JSON.stringify(bookstores, null, 2));
   return newBookstore;
@@ -33,7 +33,11 @@ async function updateBookstore(id, updatedData) {
   const index = bookstores.findIndex((store) => store.id === id);
   if (index === -1) return null;
 
-  bookstores[index] = { ...bookstores[index], ...updatedData, updatedAt: new Date() };
+  bookstores[index] = {
+    ...bookstores[index],
+    ...updatedData,
+    updatedAt: new Date().toISOString(),
+  };
   await fs.writeFile(bookstoresFile, JSON.stringify(bookstores, null, 2));
   return bookstores[index];
 }
